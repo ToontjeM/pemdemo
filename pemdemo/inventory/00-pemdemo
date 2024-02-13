@@ -1,0 +1,3 @@
+[tag_Cluster_pemdemo]
+pg1 ansible_connection=docker node=1 platform=docker
+pemserver ansible_connection=docker node=2 platform=docker

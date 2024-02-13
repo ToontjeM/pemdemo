@@ -1,0 +1,11 @@
+cluster_name: pemdemo
+cluster_tag: tag_Cluster_pemdemo
+edb_repositories:
+- enterprise
+postgres_flavour: epas
+postgres_version: '15'
+ssh_key_file: id_pemdemo
+tpa_version: v23.21-2-g9ca9bba8
+use_volatile_subscriptions: true
+yum_repository_list:
+- EPEL
