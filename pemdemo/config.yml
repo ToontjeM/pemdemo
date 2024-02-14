@@ -2,6 +2,8 @@
 architecture: M1
 cluster_name: pemdemo
 cluster_tags: {}
+locations:
+- Name: main
 
 cluster_vars:
   edb_repositories:
@@ -12,8 +14,20 @@ cluster_vars:
   yum_repository_list:
   - EPEL
 
-locations:
-- Name: main
+  postgres_databases:
+  - name: edb
+    extensions:
+    - name: edb_wait_states
+    - name: sql_profiler
+    - name: index_advisor
+    extra_postgres_packages:
+    - edb-as15-server-edb_wait_states
+    - edb-as15-server-sqlprofiler
+    - edb-as15-server-indexadvisor
+    preload_extensions:
+    - edb_wait_states
+    - sql-profiler
+    - index-advisor
 
 instance_defaults:
   image: tpa/rocky:8
@@ -21,26 +35,12 @@ instance_defaults:
   vars:
     ansible_user: root
 
-postgres_databases:
-- name: edb
-  extensions:
-  - name: edb_wait_states
-#  - name: sql_profiler
-#  - name: index_advisor
-extra_postgres_packages:
-- edb-as15-server-edb-wait-states
-#- edb-as15-server-sqlprofiler
-#- edb-as15-server-indexadvisor
-preload_extensions:
-- edb_wait_states
-#- sql-profiler
-#- index-advisor
-
 instances:
 - Name: pg1
   location: main
   node: 1
   role:
+  - primary
   - pem-agent
 
 - Name: pemserver
@@ -48,7 +48,3 @@ instances:
   node: 2
   role:
   - pem-server
-  exposed_ports:
-  - 443
- # published_ports:
- # - 433:433
