@@ -1,0 +1,46 @@
+---
+architecture: M1
+cluster_name: pemdemo
+cluster_tags: {}
+
+cluster_vars:
+  edb_repositories:
+  - enterprise
+  postgres_flavour: epas
+  postgres_version: '15'
+  failover_manager: repmgr
+  yum_repository_list:
+  - EPEL
+  extra_postgres_packages:
+    common:
+    - edb-as15-server-edb_wait_states
+    - edb-as15-server-sqlprofiler
+    - edb-as15-server-indexadvisor
+  postgres_extensions:
+  - edb_wait_states
+  - sql_profiler
+  preload_extensions:
+  - edb_wait_states
+  - sql-profiler
+
+instance_defaults:
+  image: tpa/rocky:8
+  platform: docker
+  vars:
+    ansible_user: root
+
+instances:
+- Name: pg1
+  node: 1
+  role:
+  - primary
+  - pem-agent
+
+- Name: pemserver
+  node: 2
+  role:
+  - pem-server
+  exposed_ports: 
+  - 443
+  published_ports:
+  - 443:443
