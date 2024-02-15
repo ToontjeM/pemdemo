@@ -1,6 +1,0 @@
-ansible_user: root
-location: null
-private_ip: 172.17.0.3
-role:
-- pem-server
-volumes: []
