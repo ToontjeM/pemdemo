@@ -2,32 +2,26 @@
 architecture: M1
 cluster_name: pemdemo
 cluster_tags: {}
-locations:
-- Name: main
 
 cluster_vars:
   edb_repositories:
   - enterprise
   postgres_flavour: epas
   postgres_version: '15'
-  use_volatile_subscriptions: true
+  failover_manager: repmgr
   yum_repository_list:
   - EPEL
-
-  postgres_databases:
-  - name: edb
-    extensions:
-    - name: edb_wait_states
-    - name: sql_profiler
-    - name: index_advisor
-    extra_postgres_packages:
+  extra_postgres_packages:
+    common:
     - edb-as15-server-edb_wait_states
     - edb-as15-server-sqlprofiler
     - edb-as15-server-indexadvisor
-    preload_extensions:
-    - edb_wait_states
-    - sql-profiler
-    - index-advisor
+  postgres_extensions:
+  - edb_wait_states
+  - sql_profiler
+  preload_extensions:
+  - edb_wait_states
+  - sql-profiler
 
 instance_defaults:
   image: tpa/rocky:8
@@ -37,14 +31,16 @@ instance_defaults:
 
 instances:
 - Name: pg1
-  location: main
   node: 1
   role:
   - primary
   - pem-agent
 
 - Name: pemserver
-  location: main
   node: 2
   role:
   - pem-server
+  exposed_ports: 
+  - 443
+  published_ports:
+  - 443:443

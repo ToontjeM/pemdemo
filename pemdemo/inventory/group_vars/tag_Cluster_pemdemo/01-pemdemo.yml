@@ -2,24 +2,21 @@ cluster_name: pemdemo
 cluster_tag: tag_Cluster_pemdemo
 edb_repositories:
 - enterprise
-postgres_databases:
-- extensions:
-  - name: edb_wait_states
-  - name: sql_profiler
-  - name: index_advisor
-  extra_postgres_packages:
+extra_postgres_packages:
+  common:
   - edb-as15-server-edb_wait_states
   - edb-as15-server-sqlprofiler
   - edb-as15-server-indexadvisor
-  name: edb
-  preload_extensions:
-  - edb_wait_states
-  - sql-profiler
-  - index-advisor
+failover_manager: repmgr
+postgres_extensions:
+- edb_wait_states
+- sql_profiler
 postgres_flavour: epas
 postgres_version: '15'
+preload_extensions:
+- edb_wait_states
+- sql-profiler
 ssh_key_file: id_pemdemo
 tpa_version: '23.28'
-use_volatile_subscriptions: true
 yum_repository_list:
 - EPEL
