@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source ./env.sh
+. ./env.sh
 printf "${G}--- Installing nodes --- ${N}\n"
 rm -rf pemdemo
 tpaexec configure pemdemo -a M1 --platform docker --postgresql 15 --enable-repmgr --no-git --enable-pem
