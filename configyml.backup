@@ -8,7 +8,8 @@ cluster_vars:
   - enterprise
   postgres_flavour: epas
   postgres_version: '15'
-  failover_manager: repmgr
+  failover_manager: efm
+  enable_pg_backup_api: true
   yum_repository_list:
   - EPEL
   extra_postgres_packages:
@@ -22,6 +23,11 @@ cluster_vars:
   preload_extensions:
   - edb_wait_states
   - sql-profiler
+  postgres_conf_settings:
+    wal_level: replica
+    max_wal_senders: 10
+    wal_keep_size: 500
+    max_replication_slots: 10
 
 instance_defaults:
   image: tpa/rocky:8
@@ -34,13 +40,35 @@ instances:
   node: 1
   role:
   - primary
+  - pem-agent  
+  backup: barman
+  exposed_ports: 
+  - 5444
+  published_ports:
+  - 5444:5444
+
+- Name: pg2
+  node: 2
+  role:
+  - replica
   - pem-agent
+  upstream: pg1
 
 - Name: pemserver
-  node: 2
+  node: 3
   role:
   - pem-server
   exposed_ports: 
   - 443
   published_ports:
   - 443:443
+
+- Name: barman
+  location: main
+  node: 4
+  role:
+  - barman
+  - log-server
+  - monitoring-server
+  - pem-agent
+  - efm-witness
