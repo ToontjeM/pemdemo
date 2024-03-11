@@ -6,26 +6,73 @@ The objective of the demo environment is to show the value of Postgres Enterpris
 TPA will deploy the following components:
 | Name | Task | Remarks |
 | -------- | -------- | -------- |
-| pg1| Postgres primary | PEM agent<br>Backup target |
+| pg1| Postgres primary | PEM agent<br>Backup target<br>Port 5444 open |
 | pg2 | Postgres replica | PEM agent |
-| pemserver | PEM |  |
+| pemserver | PEM | Port 443 open  |
 | barman | Barman | PEM agent <br> EFM witness|
 
-The EFM cluster which is creatd is called `pemdemo`. Status of the EFM cluster can be shown using `docker exec -it pg1 bash -c "/usr/edb/efm-4.7/bin/efm cluster-status pemdemo"`
+The EFM cluster which is created is called `pemdemo`. Status of the EFM cluster can be shown using `docker exec -it pg1 bash -c "/usr/edb/efm-4.7/bin/efm cluster-status pemdemo"`
 
 ## Demo prep
 Run `00-provision.sh` to provision the Postgres (PG1) and the PEM (pemserver) container. This deployment will take appx. 
 After successful deployment PEM should be available on https://<host-ip>/pem
 
-PEM user is `enterprisedb` and the access password for this user can be revealed using `tpaexec show-password pemdemo enterprisedb`.
+PEM user is `enterprisedb` and the access password for this user can be revealed using `tpaexec show-password pemdemo enterprisedb`. I suggest you copy this password on your clipboard because you will need it in various places.
 
-After setting u the demo you need to disconnect from PG1 and PG2, add the EFM parameters to Propeties / Advanced.
+*Important:* After setting up the demo you need to disconnect from PG1 and PG2, add the EFM parameters to Propeties / Advanced. 
 ```
 EFM cluster name : pemdemo
 EFM installation path : /usr/edb/efm-4.7/bin/
 ```
+This enables you to use the streaming replication dashboard.
 
 ## Demo flow
+### Overview PEM dashboards
+Open a broweser, go to http://localhost/pem and log in using user `enterprisedb` and the password you got at the end of the provisioning process.
+
+Give an overview of the UI and the dashboards.
+- Select Monitoring
+- Select Global Overview / pg1 / Operating System. You see one alert. Deep-dive into that alert.
+- Select pg1 / Alerts. Click on the alert (Swap consumption percentage) and explain settings. Explain notification methods.
+- Acknowledge the alert.
+- Select Home / Alerts to show all alerts.
+
+#### Alerts overview
+- Right-click on pg1 and select Management / Manage Probes
+- Show some system probes (eg. Database Statistics)
+- Show table `pemdata.table_statistics` which contains the same data.
+- Right-click on pg1 and select Management / Manage Alerts. 
+- Select Alert Templates, Database size and press th pencil.
+- Show Probe dependency and the tabe used in the SQL tab.
+- Show Alert Templates, Email Templates.
+
+### Index Advisor
+- select `pg1` and select Tools / Server /  SQL Profiler / Create Trace
+- Enter trace details
+- Right-click on database `postgres` on `pg1` and select Query Tool
+- Create a table using `create table t_test(id serial, name text);`.
+- Generate data using `insert into t_test(name) select 'Ton' from generate_series(1,2000000);`
+- Retrieve a record using `select id from t_test where id=1234567;`
+- Select the SQL Profiler tab and select the query from the log.
+- Click on the Table icon in the plan and notice the node type and the cost of the query (10266.67)
+- Open the index Advisor (graph icon in the top). Notice the differenc ein Node Type.
+- Select the `t_test` table in the Suggested indexes pane and select Ok.
+- Run the same query again and find the query in the SQL Profile pane again. Notice the Node Type and the total cost (4.45).
+
+
+
+Show barman graphs
+- Select the Barman server and select the dashboard.
+
+### Data dictionary
+Open database `pem` on the pemserver and show three schemas for PEM configuration (`pem`), PEM data (`pemdata`) and PEM hostorical data (`pemhstory`).
+- Right-click on pem/Tables/agent and select Edit/View data / All rows.
+- Right-click on `agent` and select Query Tool and show that you can query the agent table using `select * from pem.agent`.
+- Do the same for `agent_config`
+- Do the same for several tables in the `pemdata` schema. Specifically show `cpu_usage`
+- Show `cpu-usage` in `pemhistory` and explain the difference between `pemdata` and `pemhistory`.
+
+
 
 ## Demo cleanup
 To clean up the demo environment you just have to run `99-deprovision.sh`. This script will remove the docker containers and the cluster configuration.
@@ -37,3 +84,6 @@ TASK [sys : Enable rc-local service] *******************************************
 fatal: [pg1]: FAILED! => {"changed": false, "cmd": "/usr/bin/systemctl", "msg": "Failed to connect to bus: No such file or directory", "rc": 1, "stderr": "Failed to connect to bus: No such file or directory\n", "stderr_lines": ["Failed to connect to bus: No such file or directory"], "stdout": "", "stdout_lines": []}
 ```
 This is a Docker Engine issue and the only way i found to work around this is to run a pre-V25 Docker Engine. For Docker Desktop for Mac this is version 4.26.1.
+
+## TODO
+![alt text](image.png)
