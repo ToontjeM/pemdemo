@@ -51,15 +51,19 @@ Give an overview of the UI and the dashboards.
 - Enter trace details
 - Right-click on database `postgres` on `pg1` and select Query Tool
 - Create a table using `create table t_test(id serial, name text);`.
-- Generate data using `insert into t_test(name) select 'Ton' from generate_series(1,2000000);`
+- Generate data using `insert into t_test(name) select 'Test' from generate_series(1,2000000);`
 - Retrieve a record using `select id from t_test where id=1234567;`
-- Select the SQL Profiler tab and select the query from the log.
+- Select the SQL Profiler tab and select the query from the log. You can use the filter for this.
 - Click on the Table icon in the plan and notice the node type and the cost of the query (10266.67)
 - Open the index Advisor (graph icon in the top). Notice the differenc ein Node Type.
 - Select the `t_test` table in the Suggested indexes pane and select Ok.
 - Run the same query again and find the query in the SQL Profile pane again. Notice the Node Type and the total cost (4.45).
 
-
+### Performance diagnostics
+- Select pg1 and from the top meno, select the overall dashboard.
+- Open a teminal and get the password for user `dba` using `taexec show-password pemdemo dba`.
+- In the same terminal, generate traffic using `pgbench -h localhost -p 5444 -i -U dba postgres` and then `pgbench -h localhost -p 5444 -T 100 -c 10 -j 2 -U dba postgres`. 
+- Select Tools / Server / Performance diagostics and walk through the Wait events dertails options.
 
 Show barman graphs
 - Select the Barman server and select the dashboard.
@@ -71,8 +75,6 @@ Open database `pem` on the pemserver and show three schemas for PEM configuratio
 - Do the same for `agent_config`
 - Do the same for several tables in the `pemdata` schema. Specifically show `cpu_usage`
 - Show `cpu-usage` in `pemhistory` and explain the difference between `pemdata` and `pemhistory`.
-
-
 
 ## Demo cleanup
 To clean up the demo environment you just have to run `99-deprovision.sh`. This script will remove the docker containers and the cluster configuration.
@@ -87,3 +89,5 @@ This is a Docker Engine issue and the only way i found to work around this is to
 
 ## TODO
 ![alt text](image.png)
+REST API
+

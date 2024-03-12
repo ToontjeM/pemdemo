@@ -20,14 +20,24 @@ cluster_vars:
   postgres_extensions:
   - edb_wait_states
   - sql_profiler
+  - index_advisor
   preload_extensions:
   - edb_wait_states
   - sql-profiler
+  - index_advisor
   postgres_conf_settings:
     wal_level: replica
     max_wal_senders: 10
     wal_keep_size: 500
     max_replication_slots: 10
+  postgres_users:
+  - username: dba
+    generate_password: true
+    role_attrs:
+    - superuser
+    - replication
+    postgres_hba_settings:
+    - host all all 0.0.0.0/0 scram-sha-256
 
 instance_defaults:
   image: tpa/rocky:8
