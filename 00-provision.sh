@@ -13,7 +13,10 @@ docker exec -it pg1 bash -c "sudo su - enterprisedb -c 'pg_ctl restart'"
 docker exec -it pg2 bash -c "sudo su - enterprisedb -c 'pg_ctl restart'"
 
 EDBPASSWORD=$(tpaexec show-password pemdemo enterprisedb)
+DBAPASSWORD=$(tpaexec show-password pemdemo enterprisedb)
 
 #IP=$(hostname -i)
 IP=localhost
 printf "${G}--- Provisioning complete. You can now access PEM on ${R}https://$IP/pem${G} using userid ${R}enterprisedb${G} and password ${R}$EDBPASSWORD\n"
+printf "${G}--- There is also a user ${R}dba${G} with password ${R}$DBAPASSWORD\n"
+
