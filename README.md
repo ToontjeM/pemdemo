@@ -26,13 +26,18 @@ EFM installation path : /usr/edb/efm-4.7/bin/
 ```
 This enables you to use the streaming replication dashboard.
 
+Another idea would be to set up a cron job which runs pgbench like this:
+```
+0,30 * * * * (PGPASSWORD='&I$iHuprYGOljC1CKoljC7H%7$HTmLLl' pgbench -h localhost -p 5444 -T 100 -c 10 -j 2 -U enterprisedb postgres) 2>&1 |logger -t pgbench
+```
+
 ## Demo flow
 ### Overview PEM dashboards
 Open a broweser, go to http://localhost/pem and log in using user `enterprisedb` and the password you got at the end of the provisioning process.
 
 Give an overview of the UI and the dashboards.
 - Select Monitoring
-- Select Global Overview / pg1 / Operating System. You see one alert. Deep-dive into that alert.
+- Select Global Overview / pg1 / Alerts. You see one alert. Deep-dive into that alert.
 - Select pg1 / Alerts. Click on the alert (Swap consumption percentage) and explain settings. Explain notification methods.
 - Acknowledge the alert.
 - Select Home / Alerts to show all alerts.
@@ -87,8 +92,16 @@ fatal: [pg1]: FAILED! => {"changed": false, "cmd": "/usr/bin/systemctl", "msg": 
 ```
 This is a Docker Engine issue and the only way i found to work around this is to run a pre-V25 Docker Engine. For Docker Desktop for Mac this is version 4.26.1.
 
-## TODO
+## Fixes TODO
 ![alt text](image.png)
 
-REST API
+Streaming setup
+
+OS dashboards not working
+
+## Enhancements
+
+REST API demo flow
+
+
 
