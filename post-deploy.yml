@@ -1,0 +1,11 @@
+- name: Add shared_preload_libraries entries for extensions
+  set_fact:
+    shared_preload_libraries:
+      "{{ shared_preload_libraries|default([])|union([item]) }}"
+  with_items: "{{ _preload_extensions }}"
+  when:
+    item in postgres_extensions
+    or item|replace("-","_") in postgres_extensions
+    or (item == 'bdr' and 'bdr' in role)
+    or item in postgres_databases|json_query('[*].extensions[*].name|[]')
+    or item|replace("-","_") in postgres_databases|json_query('[*].extensions[*].name|[]')

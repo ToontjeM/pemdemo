@@ -11,11 +11,13 @@ TPA will deploy the following components:
 | pemserver | PEM | Port 443 open  |
 | barman | Barman | PEM agent <br> EFM witness|
 
-The EFM cluster which is created is called `pemdemo`. Status of the EFM cluster can be shown using `docker exec -it pg1 bash -c "/usr/edb/efm-4.7/bin/efm cluster-status pemdemo"`
+The EFM cluster which is created is called `pemdemo`. 
+
+Status of the EFM cluster can be shown using `docker exec -it pg1 bash -c "/usr/edb/efm-4.7/bin/efm cluster-status pemdemo"`
 
 ## Demo prep
-Run `00-provision.sh` to provision the Postgres (PG1) and the PEM (pemserver) container. This deployment will take appx. 
-After successful deployment PEM should be available on https://<host-ip>/pem
+Run `00-provision.sh` to provision the Postgres containers (pg1 and pg2), the barman container (barman) and the PEM container (pemserver). This deployment will take appx. 20 minutes to complete.
+After successful deployment PEM should be available on `https://localhost/pem`. Sometimes it takes a few minutes for the PEM container to fully stabelize. You can see that happening in your Docker Desktop Dashboard where the CPU of the container is still spiking. Wait for the CPU to stabelize before to continue.
 
 PEM user is `enterprisedb` and the access password for this user can be revealed using `tpaexec show-password pemdemo enterprisedb`. I suggest you copy this password on your clipboard because you will need it in various places.
 
@@ -26,10 +28,11 @@ EFM installation path : /usr/edb/efm-4.7/bin/
 ```
 This enables you to use the streaming replication dashboard.
 
-Another idea would be to set up a cron job which runs pgbench like this:
+Another enhancement would be to set up a cron job which runs pgbench like this:
 ```
 0,30 * * * * (PGPASSWORD='&I$iHuprYGOljC1CKoljC7H%7$HTmLLl' pgbench -h localhost -p 5444 -T 100 -c 10 -j 2 -U enterprisedb postgres) 2>&1 |logger -t pgbench
 ```
+Pgbench is already initialized into the `postgres` database by the provisioning script.
 
 ## Demo flow
 ### Overview PEM dashboards
