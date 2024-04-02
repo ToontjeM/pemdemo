@@ -82,3 +82,5 @@ instances:
   - monitoring-server
   - pem-agent
   - efm-witness
+  vars:
+    barman_last_backup_maximum_age: 2 DAYS
