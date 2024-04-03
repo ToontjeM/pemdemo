@@ -1,6 +1,10 @@
 # Postgres Enterprise Manager demo
 
+<br>
+<br>
 > PEM on Docker is not officially supported. I recommend to use [this demo](https://github.com/ToontjeM/pemdemovagrant) instead.
+<br>
+<br>
 
 
 This demo is built for Docker and is using the Trusted Postgres Architect (TPA) to deploy a 2-node cluster managed by EDB Failover Manager, a Barman server and a PEM server.
